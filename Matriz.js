@@ -1,6 +1,7 @@
-const criaMatriz = (matrizParam, paiParam) => {
+const criaMatriz = (matrizParam, paiParam, pesoParam = 0) => {
     const matriz = matrizParam;
     const matrizPai = paiParam;
+    let pesoMatriz = pesoParam;
 
     return {
         getMatriz() {
@@ -9,8 +10,16 @@ const criaMatriz = (matrizParam, paiParam) => {
         getPai() {
             return matrizPai;
         },
+        getPeso() {
+            return pesoMatriz;
+        },
+        setPeso(novoPeso) {
+            pesoMatriz = novoPeso;
+        },
         length() {
             return matriz.length;
         }
     }
 }
+
+module.exports = criaMatriz
