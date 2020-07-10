@@ -1,23 +1,12 @@
-const criaMatriz = (matrizParam, paiParam) => {
-    const matriz = matrizParam;
-    const matrizPai = paiParam;
+const criaMatriz = require(`./Matriz`);
+const guloso = require(`./guloso`);
+const largura = require(`./largura`);
+const comparaMatrizes = require(`./utils`).comparaMatrizes;
 
-    return {
-        getMatriz() {
-            return matriz;
-        },
-        getPai() {
-            return matrizPai;
-        },
-        length() {
-            return matriz.length;
-        }
-    }
+const commands = {
+    guloso: guloso.expandirNoGuloso,
+    largura: largura.expandirNo
 }
-let ultimaPosicao = {
-    linha: -1,
-    coluna: -1
-};
 
 function criarValorAleatorio(existentes, quantidadeElementos) {    
     let aleatorio = Math.floor(Math.random() * (quantidadeElementos + 1));
@@ -61,19 +50,7 @@ function gerarMatrizQuadradaResolvida(tamanho) {
     return matriz;
 }
 
-
-function compararMatrizSolucao(matriz, matrizSolucao) {
-    for (let i = 0; i < matriz[0].length; i++) {
-        for (let j = 0; j < matriz[i].length; j++) {
-            if(matriz[i][j] != matrizSolucao[i][j]) {
-                return false;
-            }
-        }
-    }
-    return true;
-}
-
-function execBuscaEmLargura(matriz, matrizSolucao) {
+function executarBusca(matriz, matrizSolucao) {
     let filaNos = new Array();
     filaNos.push(matriz);
         
@@ -91,20 +68,20 @@ function execBuscaEmLargura(matriz, matrizSolucao) {
 function buscaEmLargura(matrizSolucao, filaNos) {
     while(filaNos.length > 0) {
         let no = filaNos.shift();
-        if(compararMatrizSolucao(no.getMatriz(), matrizSolucao.getMatriz())) {                                    
+        if(comparaMatrizes(no.getMatriz(), matrizSolucao.getMatriz())) {                                    
             return no;
         }
-        let proximosNos = criarProximosNos(no);
+        let proximosNos = criarProximosNos(no, matrizSolucao);
         proximosNos.forEach(proximoNo => {
             filaNos.push(proximoNo);
         });
     }
 }
 
-function criarProximosNos(matriz) {    
+function criarProximosNos(matriz, matrizResposta = null) {    
     let posicaoDoZero = encontrarPosicaoDoZero(matriz.getMatriz());
     let moviementosDisponiveis = encontrarMovimentosDisponiveis(posicaoDoZero, matriz.length());
-    return expandirNo(matriz, posicaoDoZero, moviementosDisponiveis);
+    return commands["largura"](matriz, posicaoDoZero, moviementosDisponiveis, matrizResposta);
 }
 
 function encontrarPosicaoDoZero(matriz) {
@@ -150,163 +127,19 @@ function encontrarMovimentosDisponiveis(posZero, tamanhoMatriz) {
     return movimentosDisponiveis;
 }
 
-function expandirNo(matriz, posZero, movimentosDisponiveis) {
-    let matrizesExapandidas = new Array();
-
-    movimentosDisponiveis.forEach(movimentoDisponivel => {
-        const novoNo = trocarElementos(matriz.getMatriz(), posZero, movimentoDisponivel);
-        const novaMatriz = criaMatriz(novoNo, matriz);
-        matrizesExapandidas.push(novaMatriz);
-    });
-
-    return matrizesExapandidas;
-}
-
-function trocarElementos(matrizJogo, posZero, posElemento) {   
-    let novaMatriz = matrizJogo.map(linha => {
-        return linha.slice();
-    });
-    
-    novaMatriz[posZero.linha][posZero.coluna] = novaMatriz[posElemento.linha][posElemento.coluna]
-    novaMatriz[posElemento.linha][posElemento.coluna] = 0;
-
-    return novaMatriz;
-}
 const no = gerarMatrizQuadradaAleatoria(3);
 const noResolvido = gerarMatrizQuadradaResolvida(3);
 const matrizResolvida = criaMatriz(noResolvido, null);
 const matriz = criaMatriz(no, null);
 const noTest = 
 [[2, 3, 6],
- [1, 0, 4],
- [7, 8, 9]
+ [0, 8, 4],
+ [1, 7, 9]
 ]
 const matrizTest = criaMatriz(noTest, null);
-console.table(execBuscaEmLargura(matrizTest, matrizResolvida));
-
-
-
+console.table(executarBusca(matrizTest, matrizResolvida));
 
 // =================================================================================================
-
-function comparaElementoDasMatrizes(matrizTeste, matrizResposta, linhaMatrizTeste, colunaMatrizTeste) {
-    const tamanho = matrizResposta.length;
-    let distanciaManhattan = 0;
-    if (matrizTeste[linhaMatrizTeste][colunaMatrizTeste] != 0) {
-        for (let linhaMatrizResposta = 0; linhaMatrizResposta < tamanho; linhaMatrizResposta++) {
-            for (let colunaMatrizResposta = 0; colunaMatrizResposta < tamanho; colunaMatrizResposta++) {
-                if (matrizTeste[linhaMatrizTeste][colunaMatrizTeste] == matrizResposta[linhaMatrizResposta][colunaMatrizResposta]) {
-                    distanciaManhattan = Math.abs(linhaMatrizTeste - linhaMatrizResposta) + Math.abs(colunaMatrizTeste - colunaMatrizResposta);
-                }
-            }
-        }
-    }
-    return distanciaManhattan;
-}
-
-function calcularDistanciaManhattanMatriz(matrizTeste, matrizResposta) {
-    let distanciaManhattan = 0;
-    const tamanho = matrizResposta.length;   
-     
-    for(let linhaMatrizTeste = 0; linhaMatrizTeste < tamanho; linhaMatrizTeste++) {
-        for (let colunaMatrizTeste = 0; colunaMatrizTeste < tamanho; colunaMatrizTeste++) {
-            let aux = comparaElementoDasMatrizes(matrizTeste, matrizResposta, linhaMatrizTeste, colunaMatrizTeste);            
-            distanciaManhattan += aux;                   
-        }
-    }    
-    return distanciaManhattan;
-}
-
-function somaPesoPosicao(matrizTeste, matrizResposta) {
-    let posicaoCorreta = 0;
-    const tamanho = matrizResposta.length;
-    for (let linhaMatrizTeste = 0; linhaMatrizTeste < tamanho; linhaMatrizTeste++) {
-        for (let colunaMatrizTeste = 0; colunaMatrizTeste < tamanho; colunaMatrizTeste++) {
-            if (matrizTeste[linhaMatrizTeste][colunaMatrizTeste] != matrizResposta[linhaMatrizTeste][colunaMatrizTeste]) {
-                posicaoCorreta += 1;
-            }
-        }
-    }  
-    return posicaoCorreta;
-}
-
-function definirProximaMatriz(matrizJogo, matrizResolvida, movimentosDisponiveis, posZero) {
-    let distanciaManhattan = undefined;
-    let novaMatriz = [];
-    // let menoresCaminhos = [];
-    let matrizesTeste = [];
-    for (let i = 0; i < posicoes.length; i++) {
-        let proximoMovimentoPossivel = movimentosDisponiveis[posicoes[i]];
-        if (proximoMovimentoPossivel != -1) {
-
-            if(proximoMovimentoPossivel.linha != ultimaPosicao.linha || proximoMovimentoPossivel.coluna != ultimaPosicao.coluna) {
-                
-                const matrizAuxiliar = trocarElementos(matrizJogo, posZero, proximoMovimentoPossivel);
-                const posicaoCorreta = somaPesoPosicao(matrizAuxiliar, matrizResolvida);             
-                const distanciaManhattanAuxiliar = calcularDistanciaManhattanMatriz(matrizAuxiliar, matrizResolvida) + posicaoCorreta;    
-                console.log(distanciaManhattanAuxiliar + ' auxiliar');
-                            
-                if (distanciaManhattan == undefined || distanciaManhattanAuxiliar < distanciaManhattan) {
-                    distanciaManhattan = distanciaManhattanAuxiliar;                    
-                    novaMatriz = JSON.parse(JSON.stringify(matrizAuxiliar));
-                } else if (distanciaManhattanAuxiliar == distanciaManhattan) {
-                    const manhattanNova = calcularDistanciaManhattanMatriz(novaMatriz, matrizResolvida) + somaPesoPosicao(novaMatriz, matrizResolvida);
-                    const manhattanAuxiliar = calcularDistanciaManhattanMatriz(matrizAuxiliar, matrizResolvida) + somaPesoPosicao(matrizAuxiliar, matrizResolvida);
-                    console.log('manhattan igual');
-                    if(manhattanNova > manhattanAuxiliar) {
-                        novaMatriz = JSON.parse(JSON.stringify(matrizAuxiliar));
-                    }
-                    // matrizesTeste.push(matrizAuxiliar);
-                    // const index = Math.floor(Math.random() * matrizesTeste.length);
-                    // novaMatriz = matrizesTeste[index];
-                }
-            }
-        }
-    }
-    // if(menoresCaminhos != []) {
-    //     const i = Math.floor(Math.random() * matrizesTeste.length);
-    //     novaMatriz = matrizesTeste[i];
-    //     console.log('aqui');
-        
-    // }
-    ultimaPosicao = JSON.parse(JSON.stringify(posZero));
-    // console.log(novaMatriz);
-    console.log(distanciaManhattan + ' funcao');
-    
-    return novaMatriz;
-}
-
-function proximaJogada(tamanho, matrizJogo, matrizResposta) {    
-    const posZero = encontrarPosicaoDoZero(matrizJogo);
-    const movimentosDisponiveis = encontrarMovimentosDisponiveis(posZero, tamanho);
-    matrizJogo = definirProximaMatriz(matrizJogo, matrizResposta, movimentosDisponiveis, posZero);
-    return matrizJogo;
-}
-
-function instanciarIA(tamanho) {
-    console.clear();
-    
-    let matrizJogo = gerarMatrizQuadradaAleatoria(tamanho);
-    console.log(matrizJogo);
-    const matrizResposta = gerarMatrizQuadradaResolvida(tamanho);
-    let distanciaManhattan = calcularDistanciaManhattanMatriz(matrizJogo, matrizResposta);
-    
-    let totalDeJogadas = 0;
-    while (distanciaManhattan != 0) {
-        printarMatriz(matrizJogo);
-
-        matrizJogo = proximaJogada(tamanho, matrizJogo, matrizResposta);
-        distanciaManhattan = calcularDistanciaManhattanMatriz(matrizJogo, matrizResposta) + somaPesoPosicao(matrizJogo, matrizResposta);
-        console.log(distanciaManhattan + ' final');
-        
-        totalDeJogadas++;
-        // console.log(totalDeJogadas);
-        
-        pause(500);
-        console.clear();
-    }
-    return totalDeJogadas;
-}
 
 function printarMatriz(matrizJogo) {
     matrizJogo.forEach(linha => {
