@@ -1,5 +1,5 @@
-const criaMatriz = require(`./Matriz`);
-const trocarElementos = require(`./utils`).trocarElementos;
+// const criaMatriz = require(`./Matriz`);
+// const trocarElementos = require(`./utils`).trocarElementos;
 
 function expandirNo(matriz, posZero, movimentosDisponiveis) {
     let matrizesExapandidas = new Array();
@@ -13,6 +13,6 @@ function expandirNo(matriz, posZero, movimentosDisponiveis) {
     return matrizesExapandidas;
 }
 
-module.exports = {
-    expandirNo
-}
+// module.exports = {
+//     expandirNo
+// }

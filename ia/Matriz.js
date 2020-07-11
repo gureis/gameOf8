@@ -22,4 +22,4 @@ const criaMatriz = (matrizParam, paiParam, pesoParam = 0) => {
     }
 }
 
-module.exports = criaMatriz
+// module.exports = criaMatriz

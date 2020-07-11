@@ -1,7 +1,7 @@
 
-const criaMatriz = require(`./Matriz`);
-const trocarElementos = require(`./utils`).trocarElementos;
-const comparaMatrizes = require(`./utils`).comparaMatrizes;
+// const criaMatriz = require(`./Matriz`);
+// const trocarElementos = require(`./utils`).trocarElementos;
+// const comparaMatrizes = require(`./utils`).comparaMatrizes;
 
 function calcularDistanciaManhattanMatriz(matrizTeste, matrizResposta) {
     let distanciaManhattan = 0;
@@ -74,6 +74,6 @@ function ultimoMovimento(matrizAntiga, matrizNova) {
     return false;
 }
 
-module.exports = {
-    expandirNoGuloso
-}
+// module.exports = {
+//     expandirNoGuloso
+// }

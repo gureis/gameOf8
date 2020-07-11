@@ -21,7 +21,7 @@ function comparaMatrizes(matriz, matrizSolucao) {
     return true;
 }
 
-module.exports = {
-    trocarElementos,
-    comparaMatrizes
-}
+// module.exports = {
+//     trocarElementos,
+//     comparaMatrizes
+// }

@@ -1,11 +1,11 @@
-const criaMatriz = require(`./Matriz`);
-const guloso = require(`./guloso`);
-const largura = require(`./largura`);
-const comparaMatrizes = require(`./utils`).comparaMatrizes;
+// const criaMatriz = require(`./Matriz`);
+// const guloso = require(`./guloso`);
+// const largura = require(`./largura`);
+// const comparaMatrizes = require(`./utils`).comparaMatrizes;
 
 const commands = {
-    guloso: guloso.expandirNoGuloso,
-    largura: largura.expandirNo
+    guloso: expandirNoGuloso, //if nodejs, usar guloso.expandirNoGuloso
+    largura: expandirNo //if nodejs, usar largura.expandirNo
 }
 
 function criarValorAleatorio(existentes, quantidadeElementos) {    
@@ -18,21 +18,6 @@ function criarValorAleatorio(existentes, quantidadeElementos) {
     });
 
     return aleatorio;
-}
-
-function gerarMatrizQuadradaAleatoria(tamanho) {
-    let matriz = new Array(tamanho);
-    let elementosExistentes = [Math.ceil(tamanho*tamanho/2)];
-    
-    const quantidadeElementos = Math.pow(tamanho, 2)
-    for (let i = 0; i < tamanho; i++) {
-        matriz[i] = new Array(tamanho);
-        for (let j = 0; j < matriz[i].length; j++) {
-            matriz[i][j] = criarValorAleatorio(elementosExistentes, quantidadeElementos);
-            elementosExistentes.push(matriz[i][j]);
-        }
-    }
-    return matriz;
 }
 
 function gerarMatrizQuadradaResolvida(tamanho) {
@@ -50,11 +35,11 @@ function gerarMatrizQuadradaResolvida(tamanho) {
     return matriz;
 }
 
-function executarBusca(matriz, matrizSolucao) {
+function executarBusca(matriz, matrizSolucao, strategy) {
     let filaNos = new Array();
     filaNos.push(matriz);
         
-    let matrizAtual = buscaEmLargura(matrizSolucao, filaNos);
+    let matrizAtual = buscaEmLargura(matrizSolucao, filaNos, strategy);
 
     let filaMatrizes = Array();
     while (matrizAtual != null) {
@@ -65,23 +50,23 @@ function executarBusca(matriz, matrizSolucao) {
     return filaMatrizes;
 }
 
-function buscaEmLargura(matrizSolucao, filaNos) {
+function buscaEmLargura(matrizSolucao, filaNos, strategy) {
     while(filaNos.length > 0) {
         let no = filaNos.shift();
         if(comparaMatrizes(no.getMatriz(), matrizSolucao.getMatriz())) {                                    
             return no;
         }
-        let proximosNos = criarProximosNos(no, matrizSolucao);
+        let proximosNos = criarProximosNos(no, matrizSolucao, strategy);
         proximosNos.forEach(proximoNo => {
             filaNos.push(proximoNo);
         });
     }
 }
 
-function criarProximosNos(matriz, matrizResposta = null) {    
+function criarProximosNos(matriz, matrizResposta = null, strategy) {    
     let posicaoDoZero = encontrarPosicaoDoZero(matriz.getMatriz());
     let moviementosDisponiveis = encontrarMovimentosDisponiveis(posicaoDoZero, matriz.length());
-    return commands["largura"](matriz, posicaoDoZero, moviementosDisponiveis, matrizResposta);
+    return commands[strategy](matriz, posicaoDoZero, moviementosDisponiveis, matrizResposta);
 }
 
 function encontrarPosicaoDoZero(matriz) {
@@ -127,17 +112,19 @@ function encontrarMovimentosDisponiveis(posZero, tamanhoMatriz) {
     return movimentosDisponiveis;
 }
 
-const no = gerarMatrizQuadradaAleatoria(3);
-const noResolvido = gerarMatrizQuadradaResolvida(3);
-const matrizResolvida = criaMatriz(noResolvido, null);
-const matriz = criaMatriz(no, null);
+function gerarIa(no, strategy, tamanhoNo = 3) {
+    const matrizJogo = criaMatriz(no, null);
+    const noResolvido = gerarMatrizQuadradaResolvida(tamanhoNo);
+    const matrizResolvida = criaMatriz(noResolvido, null);
+    return executarBusca(matrizJogo, matrizResolvida, strategy);
+}
+
 const noTest = 
 [[2, 3, 6],
  [0, 8, 4],
  [1, 7, 9]
 ]
 const matrizTest = criaMatriz(noTest, null);
-console.table(executarBusca(matrizTest, matrizResolvida));
 
 // =================================================================================================
 
@@ -147,10 +134,6 @@ function printarMatriz(matrizJogo) {
     });
 }
 
-function pause(milliseconds) {
-    var dt = new Date();
-    while ((new Date()) - dt <= milliseconds) { /* Do nothing */ }
-}
 
 // console.log(instanciarIA(3));
 
