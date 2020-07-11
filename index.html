@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="main.css">
+    <title>Game of 8</title>
+</head>
+<body>
+    <h1>Jogo dos 8 - Resolvedor por busca</h1>
+    <div class="container">
+        <div class="resolved">
+            <h3>Matriz Solução</h3>
+            <div class="matrix">
+                <div class="element">1</div>
+                <div class="element">2</div>
+                <div class="element">3</div>
+                <div class="element">4</div>
+                <div class="element">0</div>
+                <div class="element">6</div>
+                <div class="element">7</div>
+                <div class="element">8</div>
+                <div class="element">9</div>
+            </div>
+        </div>
+        <div class="playable">
+            <h3>Matriz Jogável</h3>
+            <div class="matrix">
+                <div class="element"></div>
+                <div class="element"></div>
+                <div class="element"></div>
+                <div class="element"></div>
+                <div class="element"></div>
+                <div class="element"></div>
+                <div class="element"></div>
+                <div class="element"></div>
+                <div class="element"></div>
+            </div>
+            <div class="game-config">
+                <select name="search-strategy" id="search-strategy">
+                    <option value="guloso">Guloso</option>
+                    <option value="largura">Largura</option>
+                </select>
+                <button id="resolve-button">Resolver</button>
+            </div>
+        </div>
+    </div>
+    <script src="ia/Matriz.js"></script>
+    <script src="ia/utils.js"></script>
+    <script src="ia/largura.js"></script>
+    <script src="ia/guloso.js"></script>
+    <script src="ia/ia.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

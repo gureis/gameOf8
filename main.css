@@ -1,0 +1,33 @@
+.container {
+    display: grid;
+    grid-template-columns: 50% 50%;
+    justify-items: center;
+    width: 80%;
+    margin: 0 auto;
+}
+
+.matrix {
+    display: grid;
+    grid-template-columns: 50px 50px 50px;
+    grid-template-rows: 50px 50px 50px;
+}
+
+.element {
+    border: 1px solid black;
+    padding-top: 17px;
+    padding-bottom: 17px;
+    text-align: center;
+}
+
+.selected {
+    border: 3px solid rgb(0, 202, 84);
+}
+
+.game-config {
+    margin: 10px 0;
+}
+
+#search-strategy {
+    width: 100%;
+    margin-bottom: 5px;
+}
